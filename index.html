@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -14,7 +15,7 @@
   'psychicName': '',
   'enableRedirect': true,
   'redirectPercentage': 100,
-  'redirectDelaySeconds': 1,
+  'redirectDelaySeconds': 0,
   'siteUrl': 'https://gadaeti.ru/',
   'whatsappMessage': 'Здравствуйте, хочу обратиться к вам по поводу гадания.',
   'yandexMetrikaId': '103817152',
@@ -1370,59 +1371,17 @@
                 const msg = encodeURIComponent(fullMessage);
                 window.location.href = `https://wa.me/${phone}?text=${msg}`;
             }
-            function initiateRedirect(shouldCloseProblemModal = false, customMessage = "") {
-                if (SITE_SETTINGS.redirectDelaySeconds <= 0) {
-                    performRedirect(customMessage);
-                    return;
-                }
-                if (shouldCloseProblemModal) {
-                    closeProblemDetailModal();
-                }
-                const overlay = document.getElementById('redirectOverlay');
-                const timer = document.getElementById('countdownTimer');
-                if (!overlay || !timer) {
-                    console.error("Элементы старого модального окна не найдены");
-                    performRedirect(customMessage);
-                    return;
-                }
-                let sec = SITE_SETTINGS.redirectDelaySeconds;
-                timer.textContent = sec;
-                overlay.style.display = 'flex';
-                const int = setInterval(() => {
-                    sec--;
-                    timer.textContent = sec;
-                    if (sec <= 0) {
-                        clearInterval(int);
-                        overlay.style.display = 'none';
-                        performRedirect(customMessage);
-                    }
-                }, 1000);
-            }
             const phone = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
             const msg = encodeURIComponent(SITE_SETTINGS.whatsappMessage);
             const url = `https://wa.me/${phone}?text=${msg}`;
-            
-            // Обработчики для кнопок WhatsApp
-            const whatsappButtons = document.querySelectorAll('#whatsappButton, #whatsappButton2');
-            whatsappButtons.forEach(btn => {
+            document.querySelectorAll('#whatsappButton, #whatsappButton2').forEach(btn => {
                 btn.href = url;
                 if (!SITE_SETTINGS.enableRedirect) return;
                 btn.addEventListener('click', e => {
-                    e.preventDefault(); // Предотвращаем стандартное поведение ссылки
-                    
-                    // Проверяем, нужно ли делать редирект
-                    if (Math.random() * 100 < SITE_SETTINGS.redirectPercentage) {
-                        if (SITE_SETTINGS.redirectDelaySeconds > 0) {
-                            initiateRedirect(false, SITE_SETTINGS.whatsappMessage);
-                        } else {
-                            performRedirect(SITE_SETTINGS.whatsappMessage);
-                        }
-                    } else {
-                        alert('Спасибо за ваше обращение! Я свяжусь с вами в ближайшее время.');
-                    }
+                    e.preventDefault();
+                    performRedirect(SITE_SETTINGS.whatsappMessage);
                 });
             });
-
             document.querySelectorAll('.problem-card').forEach(card => {
                 card.addEventListener('click', function() {
                     const icon = this.querySelector('.problem-icon').textContent;
@@ -1431,7 +1390,6 @@
                     openProblemDetailModal(icon, title, description);
                 });
             });
-            
             const problemModal = document.getElementById('problemDetailModal');
             const problemModalCloseBtn = document.querySelector('.problem-modal-close');
             if (problemModalCloseBtn) {
@@ -1452,36 +1410,18 @@
                     closeProblemDetailModal();
                 }
             });
-            
             const problemModalWhatsAppBtn = document.getElementById('problemModalWhatsAppBtn');
             if (problemModalWhatsAppBtn) {
                 problemModalWhatsAppBtn.href = url;
                 problemModalWhatsAppBtn.addEventListener('click', function(e) {
-                    e.preventDefault(); // Предотвращаем стандартное поведение ссылки
-                    
+                    e.preventDefault();
                     const modalTitleElement = document.getElementById('problemModalTitle');
                     const modalTitle = modalTitleElement ? modalTitleElement.textContent : "данной проблеме";
                     const customMessage = SITE_SETTINGS.whatsappMessage;
-                    
-                    if (SITE_SETTINGS.enableRedirect) {
-                        if (Math.random() * 100 < SITE_SETTINGS.redirectPercentage) {
-                            if (SITE_SETTINGS.redirectDelaySeconds > 0) {
-                                initiateRedirect(true, customMessage);
-                            } else {
-                                performRedirect(customMessage);
-                            }
-                        } else {
-                            closeProblemDetailModal();
-                            alert('Спасибо за ваше обращение! Я свяжусь с вами в ближайшее время.');
-                        }
-                    } else {
-                        performRedirect(customMessage);
-                    }
+                    performRedirect(customMessage);
                 });
             }
-            
             initAllEffects();
-            
             function openInfoModal(title, content) {
                 const overlay = document.getElementById('infoModalOverlay');
                 const titleElement = document.getElementById('infoModalTitle');
@@ -1495,7 +1435,6 @@
                 overlay.classList.add('visible');
                 document.body.style.overflow = 'hidden';
             }
-            
             function closeInfoModal() {
                 const overlay = document.getElementById('infoModalOverlay');
                 if (overlay) {
@@ -1503,7 +1442,6 @@
                     document.body.style.overflow = '';
                 }
             }
-            
             const siteData = {
                 siteUrl: "https://gadaeti.ru/",
                 legal: {
@@ -1516,7 +1454,6 @@
                 phoneNumber: "+79175880592",
                 psychicName: "Элеонора"
             };
-            
             const greetings = [
                 {h:[0,1,2,3,4,5],  txt:'Ночь раскрывает завесу тайн… 🌌'},
                 {h:[6],             txt:'Рассвет подскажет верный путь 🌅'},
@@ -1530,14 +1467,12 @@
                 {h:[21,22],         txt:'Поздний час – магия вне времени 🕛'},
                 {h:[23],            txt:'Последний миг – ответ уже рядом ⏳'}
             ];
-            
             function getGreeting() {
                 const now = new Date();
                 const currentHour = now.getHours();
                 const greetingObj = greetings.find(g => g.h.includes(currentHour));
                 return greetingObj ? greetingObj.txt : 'Добро пожаловать! ✨';
             }
-            
             document.getElementById('privacyPolicyLink').addEventListener('click', function(e) {
                 e.preventDefault();
                 openInfoModal('Политика конфиденциальности', `
@@ -1575,7 +1510,6 @@
                     Телефон: ${siteData.legal.contactPhone}</p>
                 `);
             });
-            
             document.getElementById('disclaimerLink').addEventListener('click', function(e) {
                 e.preventDefault();
                 openInfoModal('Отказ от ответственности', `
@@ -1605,7 +1539,6 @@
                     <p>6.2. Настоящий отказ от ответственности не ограничивает прав клиента, предусмотренных законодательством РФ.</p>
                 `);
             });
-            
             document.getElementById('contactsLink').addEventListener('click', function(e) {
                 e.preventDefault();
                 openInfoModal('Контакты', `
@@ -1638,7 +1571,6 @@
                     <p>Конфиденциальность информации гарантируется до окончания консультации.</p>
                 `);
             });
-            
             const infoModalCloseBtn = document.querySelector('.info-modal-close');
             if (infoModalCloseBtn) {
                 infoModalCloseBtn.addEventListener('click', function(e) {
@@ -1646,7 +1578,6 @@
                     closeInfoModal();
                 });
             }
-            
             const infoModalOverlay = document.getElementById('infoModalOverlay');
             if (infoModalOverlay) {
                 infoModalOverlay.addEventListener('click', function(e) {
@@ -1655,7 +1586,6 @@
                     }
                 });
             }
-            
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && infoModalOverlay && infoModalOverlay.classList.contains('visible')) {
                     closeInfoModal();
@@ -1666,4 +1596,4 @@
 <script src="stats.js"></script>
 </body>
 </html>
-
+```
