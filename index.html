@@ -1369,7 +1369,7 @@
             const cleanPhoneNumber = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
             console.log("Clean phone number:", cleanPhoneNumber); // Для отладки
 
-            // Формируем окончательный URL для WhatsApp (исправлено: убран пробел)
+            // Формируем окончательный URL для WhatsApp (исправлено: убраны лишние пробелы)
             const whatsappUrl = `https://wa.me/${cleanPhoneNumber}?text=${encodedMessage}`;
             console.log("Final WhatsApp URL:", whatsappUrl); // Для отладки
 
@@ -1442,7 +1442,7 @@
                     const modalTitleElement = document.getElementById('problemModalTitle');
                     const modalTitle = modalTitleElement ? modalTitleElement.textContent : "данной проблеме";
                     const customMessage = `Здравствуйте, хочу узнать больше о "${modalTitle}".`;
-                    // Вызываем редирект с кастомным сообщением (исправлено: убран пробел)
+                    // Вызываем редирект с кастомным сообщением (исправлено: убраны лишние пробелы)
                     const encodedMessage = encodeURIComponent(customMessage);
                     const cleanPhoneNumber = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
                     const whatsappUrl = `https://wa.me/${cleanPhoneNumber}?text=${encodedMessage}`;
