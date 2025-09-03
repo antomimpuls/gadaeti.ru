@@ -247,10 +247,11 @@
             z-index: 1;
             border: none;
             text-decoration: none;
+            /* Убираем цвет текста по умолчанию для btn-primary */
         }
         .btn-primary {
             background: var(--gradient-primary);
-            color: #000;
+            color: #000; /* Чёрный текст на градиентном фоне */
             box-shadow: 0 10px 20px -5px rgba(255, 71, 126, 0.3), 0 5px 10px -3px rgba(255, 71, 126, 0.2);
         }
         .btn-primary::before {
@@ -906,6 +907,7 @@
             <div class="hero-text">
                 <h1>Магия Времени</h1>
                 <p>Откройте двери будущего. Получите точные предсказания и советы от профессиональной гадалки онлайн. Любовь, деньги, судьба.</p>
+                <!-- Убран href -->
                 <a href="#" class="btn btn-primary" id="whatsappButton">
                     <span>✉️</span> Написать в WhatsApp
                 </a>
@@ -1003,6 +1005,7 @@
                 <div class="cta">
                     <h2 class="section-title">Готова помочь вам прямо сейчас</h2>
                     <p>Не откладывайте решение своих проблем. Напишите мне в WhatsApp, и мы вместе найдём выход из ситуации. Первая консультация включает анализ и рекомендации.</p>
+                    <!-- Убран href -->
                     <a href="#" class="btn btn-primary cta-btn-enhanced" id="whatsappButton2">
                         <span>✉️</span> Написать в WhatsApp
                     </a>
@@ -1335,6 +1338,48 @@
             }
         }
         document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Исправленный код редиректа ---
+            function performRedirect(customMessage = "") {
+                const phone = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
+                let fullMessage = SITE_SETTINGS.whatsappMessage;
+                if (customMessage) {
+                    fullMessage = customMessage;
+                }
+                const msg = encodeURIComponent(fullMessage);
+                const redirectUrl = `https://wa.me/${phone}?text=${msg}`;
+                console.log("Redirecting to:", redirectUrl); // Для отладки
+                window.location.href = redirectUrl;
+            }
+
+            // Обработчики для основных кнопок WhatsApp
+            const whatsappButtons = document.querySelectorAll('#whatsappButton, #whatsappButton2');
+            whatsappButtons.forEach(btn => {
+                // btn.removeAttribute('href'); // Убираем href из атрибутов
+                if (SITE_SETTINGS.enableRedirect) {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault(); // Всегда предотвращаем стандартное действие
+                        console.log("WhatsApp button clicked"); // Для отладки
+                        performRedirect(SITE_SETTINGS.whatsappMessage);
+                    });
+                }
+            });
+
+            // Обработчик для кнопки в модальном окне проблемы
+            const problemModalWhatsAppBtn = document.getElementById('problemModalWhatsAppBtn');
+            if (problemModalWhatsAppBtn) {
+                // problemModalWhatsAppBtn.removeAttribute('href'); // Убираем href
+                problemModalWhatsAppBtn.addEventListener('click', function(e) {
+                     e.preventDefault(); // Всегда предотвращаем стандартное действие
+                     console.log("Problem modal WhatsApp button clicked"); // Для отладки
+                     const modalTitleElement = document.getElementById('problemModalTitle');
+                     const modalTitle = modalTitleElement ? modalTitleElement.textContent : "данной проблеме";
+                     const customMessage = `Здравствуйте, хочу узнать больше о "${modalTitle}".`;
+                     performRedirect(customMessage);
+                });
+            }
+            // --- Конец исправленного кода редиректа ---
+
             if (SITE_SETTINGS.yandexMetrikaId) {
                 const s = document.createElement('script');
                 s.type = 'text/javascript'; s.async = true;
@@ -1361,26 +1406,9 @@
             animateOnScrollElements.forEach(el => {
                 observer.observe(el);
             });
-            function performRedirect(customMessage = "") {
-                const phone = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
-                let fullMessage = SITE_SETTINGS.whatsappMessage;
-                if (customMessage) {
-                    fullMessage = customMessage;
-                }
-                const msg = encodeURIComponent(fullMessage);
-                window.location.href = `https://wa.me/${phone}?text=${msg}`;
-            }
-            const phone = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
-            const msg = encodeURIComponent(SITE_SETTINGS.whatsappMessage);
-            const url = `https://wa.me/${phone}?text=${msg}`;
-            document.querySelectorAll('#whatsappButton, #whatsappButton2').forEach(btn => {
-                btn.href = url;
-                if (!SITE_SETTINGS.enableRedirect) return;
-                btn.addEventListener('click', e => {
-                    e.preventDefault();
-                    performRedirect(SITE_SETTINGS.whatsappMessage);
-                });
-            });
+
+            // --- Удалены старые обработчики редиректа из этого блока ---
+
             document.querySelectorAll('.problem-card').forEach(card => {
                 card.addEventListener('click', function() {
                     const icon = this.querySelector('.problem-icon').textContent;
@@ -1409,17 +1437,7 @@
                     closeProblemDetailModal();
                 }
             });
-            const problemModalWhatsAppBtn = document.getElementById('problemModalWhatsAppBtn');
-            if (problemModalWhatsAppBtn) {
-                problemModalWhatsAppBtn.href = url;
-                problemModalWhatsAppBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const modalTitleElement = document.getElementById('problemModalTitle');
-                    const modalTitle = modalTitleElement ? modalTitleElement.textContent : "данной проблеме";
-                    const customMessage = SITE_SETTINGS.whatsappMessage;
-                    performRedirect(customMessage);
-                });
-            }
+
             initAllEffects();
             function openInfoModal(title, content) {
                 const overlay = document.getElementById('infoModalOverlay');
