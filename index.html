@@ -11,16 +11,16 @@
     <script>
         // === НАСТРОЙКИ ===
         const SITE_SETTINGS = {
-            'phoneNumber': '+79175880592',
-            'psychicName': '',
-            'enableRedirect': false,
-            'redirectPercentage': 100,
-            'redirectDelaySeconds': 0,
-            'siteUrl': 'https://gadaeti.ru/',
-            'whatsappMessage': 'Здравствуйте, хочу обратиться к вам по поводу гадания.',
-            'yandexMetrikaId': '103817152',
-            'psychicImageURL': 'https://raw.githubusercontent.com/antomimpuls/gadaeti.ru/main/img-8.jpeg'
-        };
+  'phoneNumber': '+79175880592',
+  'psychicName': '',
+  'enableRedirect': true,
+  'redirectPercentage': 100,
+  'redirectDelaySeconds': 1,
+  'siteUrl': 'https://gadaeti.ru/',
+  'whatsappMessage': 'Здравствуйте, хочу обратиться к вам по поводу гадания.',
+  'yandexMetrikaId': '103817152',
+  'psychicImageURL': 'https://raw.githubusercontent.com/antomimpuls/gadaeti.ru/main/img-8.jpeg'
+};
 
         // Формируем URL для WhatsApp один раз при загрузке
         const WA_URL = `https://wa.me/${SITE_SETTINGS.phoneNumber.replace(/\D/g,'')}?text=${encodeURIComponent(SITE_SETTINGS.whatsappMessage)}`;
