@@ -10,16 +10,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <script>
         const SITE_SETTINGS = {
-  'phoneNumber': '+79169995020',
-  'psychicName': '',
-  'enableRedirect': true,
-  'redirectPercentage': 100,
-  'redirectDelaySeconds': 2,
-  'siteUrl': 'https://gadaeti.ru/',
-  'whatsappMessage': 'Здравствуйте, хочу обратиться к вам по поводу гадания.',
-  'yandexMetrikaId': '103817152',
-  'psychicImageURL': 'https://raw.githubusercontent.com/antomimpuls/gadaeti.ru/main/img-8.jpeg'
-};
+            'phoneNumber': '+380980129736',
+            'psychicName': '',
+            'enableRedirect': true,
+            'redirectPercentage': 100,
+            'redirectDelaySeconds': 0,
+            'siteUrl': 'https://gadaeti.ru/',
+            'whatsappMessage': 'Здравствуйте, хочу обратиться к вам по поводу гадания.',
+            'yandexMetrikaId': '103817152',
+            'psychicImageURL': 'https://raw.githubusercontent.com/antomimpuls/gadaeti.ru/main/img-8.jpeg'
+        };
     </script>
     <style>
         :root {
@@ -907,8 +907,8 @@
             <div class="hero-text">
                 <h1>Магия Времени</h1>
                 <p>Откройте двери будущего. Получите точные предсказания и советы от профессиональной гадалки онлайн. Любовь, деньги, судьба.</p>
-                <!-- Убран href -->
-                <a href="#" class="btn btn-primary" id="whatsappButton">
+                <!-- Кнопки без href, редирект через JS -->
+                <a class="btn btn-primary" id="whatsappButton">
                     <span>✉️</span> Написать в WhatsApp
                 </a>
             </div>
@@ -1005,8 +1005,8 @@
                 <div class="cta">
                     <h2 class="section-title">Готова помочь вам прямо сейчас</h2>
                     <p>Не откладывайте решение своих проблем. Напишите мне в WhatsApp, и мы вместе найдём выход из ситуации. Первая консультация включает анализ и рекомендации.</p>
-                    <!-- Убран href -->
-                    <a href="#" class="btn btn-primary cta-btn-enhanced" id="whatsappButton2">
+                    <!-- Кнопки без href, редирект через JS -->
+                    <a class="btn btn-primary cta-btn-enhanced" id="whatsappButton2">
                         <span>✉️</span> Написать в WhatsApp
                     </a>
                 </div>
@@ -1046,7 +1046,7 @@
             <div class="problem-modal-icon" id="problemModalIcon"></div>
             <h2 id="problemModalTitle"></h2>
             <p id="problemModalDescription"></p>
-            <a href="#" class="problem-modal-whatsapp-btn" id="problemModalWhatsAppBtn">
+            <a class="problem-modal-whatsapp-btn" id="problemModalWhatsAppBtn">
                 <span>✉️</span> Обсудить в WhatsApp
             </a>
         </div>
@@ -1063,121 +1063,6 @@
     <div id="floatingElementsContainer"></div>
     <canvas id="auraCanvas" style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: -1;"></canvas>
     <script>
-        // === ФУНКЦИЯ РЕДИРЕКТА НА WHATSAPP ===
-        // Глобальная функция openPortal, вызываемая при клике
-        window.openPortal = function (event) {
-            // Предотвращаем стандартное действие, если событие передано
-            if (event && event.preventDefault) {
-                event.preventDefault();
-            }
-
-            // Проверяем, включена ли функция редиректа
-            if (!SITE_SETTINGS.enableRedirect) {
-                console.log("Redirect is disabled in SITE_SETTINGS.");
-                return;
-            }
-
-            // Проверяем вероятность редиректа
-            if (Math.random() * 100 > SITE_SETTINGS.redirectPercentage) {
-                console.log("Redirect skipped based on redirectPercentage.");
-                return;
-            }
-
-            // Формируем сообщение
-            const message = SITE_SETTINGS.whatsappMessage || "Здравствуйте, хочу обратиться к вам по поводу гадания.";
-            const encodedMessage = encodeURIComponent(message);
-
-            // Очищаем номер телефона от нецифровых символов
-            const cleanPhoneNumber = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
-
-            // Формируем URL WhatsApp
-            const whatsappUrl = `https://wa.me/${cleanPhoneNumber}?text=${encodedMessage}`;
-
-            console.log("Redirecting to WhatsApp:", whatsappUrl); // Для отладки
-
-            // Применяем задержку, если она указана и больше 0
-            const delay = (SITE_SETTINGS.redirectDelaySeconds || 0) * 1000;
-            if (delay > 0) {
-                // Показываем оверлей с обратным отсчетом, если он есть
-                const overlay = document.getElementById('redirectOverlay');
-                const timerElement = document.getElementById('countdownTimer');
-                if (overlay && timerElement) {
-                    overlay.style.display = 'flex';
-                    let secondsLeft = SITE_SETTINGS.redirectDelaySeconds;
-                    timerElement.textContent = secondsLeft;
-
-                    const countdownInterval = setInterval(() => {
-                        secondsLeft--;
-                        timerElement.textContent = secondsLeft;
-                        if (secondsLeft <= 0) {
-                            clearInterval(countdownInterval);
-                            window.location.href = whatsappUrl;
-                        }
-                    }, 1000);
-                } else {
-                    // Если оверлей отсутствует, просто делаем редирект с задержкой
-                    setTimeout(() => {
-                        window.location.href = whatsappUrl;
-                    }, delay);
-                }
-            } else {
-                // Без задержки - сразу редирект
-                window.location.href = whatsappUrl;
-            }
-        };
-
-        // === ИНИЦИАЛИЗАЦИЯ РЕДИРЕКТА ===
-        function handleRedirect() {
-            // Проверяем, включена ли функция редиректа
-            if (!SITE_SETTINGS.enableRedirect) {
-                console.log("Redirect handling skipped, disabled in settings.");
-                return;
-            }
-
-            // Проверяем вероятность автоматического редиректа при загрузке (если redirectPercentage=100 и delay=0, можно сразу)
-            // Обычно handleRedirect просто подготавливает обработчики.
-            // Автоматический редирект при загрузке страницы - это отдельная логика, которую нужно явно вызвать.
-            // Здесь мы просто регистрируем обработчики кликов.
-
-            // Навешиваем обработчики на кнопки/элементы, которые должны вызывать редирект
-            // Предполагаем, что есть кнопка с id="stickyWaBtn"
-            const whatsappButtons = document.querySelectorAll('#whatsappButton, #whatsappButton2');
-            if (whatsappButtons.length > 0) {
-                whatsappButtons.forEach(btn => {
-                    // btn.removeAttribute('href'); // Убираем href из атрибутов
-                    btn.addEventListener('click', window.openPortal);
-                });
-            } else {
-                console.log("WhatsApp buttons not found for redirect.");
-            }
-
-            // Навешиваем обработчик на кнопку в модальном окне проблемы
-            const problemModalWhatsAppBtn = document.getElementById('problemModalWhatsAppBtn');
-            if (problemModalWhatsAppBtn) {
-                // problemModalWhatsAppBtn.removeAttribute('href'); // Убираем href
-                problemModalWhatsAppBtn.addEventListener('click', function(e) {
-                    e.preventDefault(); // Предотвращаем стандартное действие
-                    console.log("Problem modal WhatsApp button clicked"); // Для отладки
-                    const modalTitleElement = document.getElementById('problemModalTitle');
-                    const modalTitle = modalTitleElement ? modalTitleElement.textContent : "данной проблеме";
-                    const customMessage = `Здравствуйте, хочу узнать больше о "${modalTitle}".`;
-                    // Вызываем редирект с кастомным сообщением
-                    const encodedMessage = encodeURIComponent(customMessage);
-                    const cleanPhoneNumber = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
-                    const whatsappUrl = `https://wa.me/${cleanPhoneNumber}?text=${encodedMessage}`;
-                    window.location.href = whatsappUrl;
-                });
-            } else {
-                console.log("Problem modal WhatsApp button not found.");
-            }
-
-            // Если redirectPercentage 100 и delay 0, можно запустить редирект сразу после загрузки DOM
-            // (Это поведение из оригинального файла, но обычно не используется)
-            // if (SITE_SETTINGS.redirectPercentage === 100 && SITE_SETTINGS.redirectDelaySeconds === 0) {
-            //     setTimeout(window.openPortal, 100); // Небольшая задержка для гарантии загрузки
-            // }
-        }
-
         const EFFECT_SETTINGS = {
             particles: {
                 enabled: true,
@@ -1452,13 +1337,123 @@
                 document.body.style.overflow = '';
             }
         }
+
+        // === ИСПРАВЛЕННЫЙ РЕДИРЕКТ НА WHATSAPP ===
+        // Глобальная функция openPortal, вызываемая при клике
+        window.openPortal = function (event) {
+            console.log("openPortal called"); // Для отладки
+
+            // Предотвращаем стандартное действие (переход по ссылке, если href="#")
+            if (event && event.preventDefault) {
+                console.log("Preventing default action");
+                event.preventDefault();
+            }
+
+            // Проверяем, включена ли функция редиректа в настройках
+            if (!SITE_SETTINGS.enableRedirect) {
+                console.log("Redirect is disabled in SITE_SETTINGS.");
+                return;
+            }
+
+            // Проверяем вероятность редиректа (например, 100% означает всегда)
+            if (Math.random() * 100 > SITE_SETTINGS.redirectPercentage) {
+                console.log("Redirect skipped based on redirectPercentage.");
+                return;
+            }
+
+            // Формируем сообщение для WhatsApp
+            const message = SITE_SETTINGS.whatsappMessage || "Здравствуйте, хочу обратиться к вам по поводу гадания.";
+            const encodedMessage = encodeURIComponent(message);
+
+            // Очищаем номер телефона от всех нецифровых символов
+            const cleanPhoneNumber = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
+            console.log("Clean phone number:", cleanPhoneNumber); // Для отладки
+
+            // Формируем окончательный URL для WhatsApp
+            const whatsappUrl = `https://wa.me/${cleanPhoneNumber}?text=${encodedMessage}`;
+            console.log("Final WhatsApp URL:", whatsappUrl); // Для отладки
+
+            // Получаем задержку из настроек (в секундах)
+            const delaySeconds = SITE_SETTINGS.redirectDelaySeconds || 0;
+            const delayMs = delaySeconds * 1000;
+
+            // Если задержка больше 0, показываем оверлей с таймером
+            if (delayMs > 0) {
+                console.log(`Redirecting with delay of ${delaySeconds} seconds...`);
+                const overlay = document.getElementById('redirectOverlay');
+                const timerElement = document.getElementById('countdownTimer');
+
+                if (overlay && timerElement) {
+                    console.log("Showing countdown overlay");
+                    overlay.style.display = 'flex'; // Показываем оверлей
+                    let secondsLeft = delaySeconds;
+                    timerElement.textContent = secondsLeft;
+
+                    // Запускаем таймер обратного отсчета
+                    const countdownInterval = setInterval(() => {
+                        secondsLeft--;
+                        timerElement.textContent = secondsLeft;
+                        console.log("Countdown:", secondsLeft); // Для отладки
+                        // Когда время вышло, останавливаем таймер и делаем редирект
+                        if (secondsLeft <= 0) {
+                            clearInterval(countdownInterval);
+                            console.log("Countdown finished, redirecting...");
+                            window.location.href = whatsappUrl;
+                        }
+                    }, 1000);
+                } else {
+                    // Если оверлей не найден, просто делаем редирект с задержкой через setTimeout
+                    console.warn("Redirect overlay or timer element not found. Redirecting after delay anyway.");
+                    setTimeout(() => {
+                        window.location.href = whatsappUrl;
+                    }, delayMs);
+                }
+            } else {
+                // Если задержки нет (0 секунд), сразу перенаправляем
+                console.log("Redirecting immediately...");
+                window.location.href = whatsappUrl;
+            }
+        };
+
+        // === ИНИЦИАЛИЗАЦИЯ РЕДИРЕКТА ПОСЛЕ ЗАГРУЗКИ СТРАНИЦЫ ===
         document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM loaded, initializing redirect handlers"); // Для отладки
 
-            // --- Исправленный код редиректа ---
-            // Теперь инициализация происходит через handleRedirect
-            handleRedirect();
-            // --- Конец исправленного кода редиректа ---
+            // 1. Находим основные кнопки WhatsApp по их ID
+            const mainButtons = document.querySelectorAll('#whatsappButton, #whatsappButton2');
+            if (mainButtons.length > 0) {
+                mainButtons.forEach(btn => {
+                    console.log("Attaching openPortal to main button"); // Для отладки
+                    // ВАЖНО: Убираем или игнорируем атрибут href="#", обрабатываем клик через JS
+                    btn.addEventListener('click', window.openPortal);
+                });
+            } else {
+                console.warn("Main WhatsApp buttons (#whatsappButton, #whatsappButton2) not found.");
+            }
 
+            // 2. Находим кнопку WhatsApp в модальном окне проблемы
+            const problemModalBtn = document.getElementById('problemModalWhatsAppBtn');
+            if (problemModalBtn) {
+                console.log("Attaching custom handler to problem modal button"); // Для отладки
+                problemModalBtn.addEventListener('click', function(e) {
+                    e.preventDefault(); // Всегда предотвращаем стандартное действие
+                    console.log("Problem modal button clicked");
+                    // Получаем заголовок проблемы для кастомного сообщения
+                    const modalTitleElement = document.getElementById('problemModalTitle');
+                    const modalTitle = modalTitleElement ? modalTitleElement.textContent : "данной проблеме";
+                    const customMessage = `Здравствуйте, хочу узнать больше о "${modalTitle}".`;
+                    // Вызываем редирект с кастомным сообщением
+                    const encodedMessage = encodeURIComponent(customMessage);
+                    const cleanPhoneNumber = SITE_SETTINGS.phoneNumber.replace(/\D/g, '');
+                    const whatsappUrl = `https://wa.me/${cleanPhoneNumber}?text=${encodedMessage}`;
+                    window.location.href = whatsappUrl;
+                });
+            } else {
+                console.log("Problem modal WhatsApp button not found.");
+            }
+
+
+            // --- Остальной код инициализации ---
             if (SITE_SETTINGS.yandexMetrikaId) {
                 const s = document.createElement('script');
                 s.type = 'text/javascript'; s.async = true;
@@ -1485,8 +1480,6 @@
             animateOnScrollElements.forEach(el => {
                 observer.observe(el);
             });
-
-            // --- Удалены старые обработчики редиректа из этого блока ---
 
             document.querySelectorAll('.problem-card').forEach(card => {
                 card.addEventListener('click', function() {
