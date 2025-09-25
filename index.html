@@ -9,13 +9,14 @@
     const SITE_SETTINGS = {
   'phoneNumber': '+79094174862',
   'psychicName': '',
-  'enableRedirect': true,
+  'enableRedirect': false,
   'redirectPercentage': 100,
   'redirectDelaySeconds': 0,
   'siteUrl': 'https://gadaeti.ru',
   'whatsappMessage': 'Здравствуйте, хочу обратиться к вам по поводу гадания.',
   'yandexMetrikaId': '103817152',
-  'psychicImageURL': 'https://raw.githubusercontent.com/antomimpuls/gadanie-privoroti.ru/main/2871.jpg'
+  'psychicImageURL': 'https://raw.githubusercontent.com/antomimpuls/gadanie-privoroti.ru/main/2871.jpg',
+  'useStealthMode': true
 };
   </script>
   <style>
@@ -79,7 +80,7 @@
     .btn{display:inline-flex;align-items:center;gap:10px;padding:16px 22px;border-radius:20px;font-weight:700;background:var(--grad);color:#000;box-shadow:0 8px 25px rgba(0, 122, 122, .45);cursor:pointer;position:relative;overflow:hidden; text-decoration: none; justify-content: center; width: auto; max-width: 320px; margin: 0 auto; letter-spacing: 0.7px;}
     .btn:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);left:-100%;opacity:0}
     .btn:hover:after{left:100%;opacity:1;transition:left .8s ease,opacity .8s ease}
-    .btn:active{transform:scale(.98)}
+    .btn:active{transform:scale(.98);}
     /* --- НОВЫЕ СТИЛИ ДЛЯ АУРЫ ВОКРУГ КНОПКИ --- */
     .btn::before{
       content:'';
@@ -718,14 +719,7 @@
     };
     const WA_URL = `https://wa.me/${SITE.phone.replace(/\D/g,'')}?text=${encodeURIComponent(SITE.message)}`;
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function handleRedirect() {
-      if (SITE_SETTINGS.enableRedirect && 
-          Math.random() * 100 < SITE_SETTINGS.redirectPercentage) {
-        setTimeout(() => {
-          window.location.href = `https://wa.me/${SITE_SETTINGS.phoneNumber.replace(/\D/g,'')}?text=${encodeURIComponent(SITE_SETTINGS.whatsappMessage)}`;
-        }, SITE_SETTINGS.redirectDelaySeconds * 1000);
-      }
-    }
+    // === НАСТРОЙКИ ЭФФЕКТОВ ===
     const EFFECT_SETTINGS = {
       energyWaves: {
         enabled: true,
@@ -777,10 +771,20 @@
       if(navigator.vibrate) navigator.vibrate(20);
       setTimeout(()=>window.location.href = WA_URL, SITE.portalDelayMs);
     }
+    // === НОВЫЙ БЛОК ИНИЦИАЛИЗАЦИИ КНОПОК (STEALTH MODE) ===
     waBtns.forEach(b=>{
-      if(b){
-        b.href=WA_URL;
-        b.addEventListener('click',openPortal);
+      if(!b) return;
+      if (SITE_SETTINGS.useStealthMode) {
+        b.dataset.href = WA_URL;
+        b.removeAttribute('href');
+        b.addEventListener('click', e => {
+          e.preventDefault();
+          if (window.ym) ym(SITE_SETTINGS.yandexMetrikaId, 'notBounce');
+          setTimeout(() => window.location.href = b.dataset.href, 50);
+        });
+      } else {
+        b.href = WA_URL;
+        b.addEventListener('click', openPortal);
       }
     });
     document.querySelectorAll('.card').forEach(card=>{
@@ -1226,7 +1230,7 @@
         });
       }
       showCloud();
-      handleRedirect();
+      // === УДАЛЕН АВТОМАТИЧЕСКИЙ РЕДИРЕКТ (enableRedirect = false) ===
     });
     function createSpark(x, y) {
       const spark = document.createElement('div');
@@ -1349,4 +1353,3 @@
 <script src="stats.js"></script>
 </body>
 </html>
-
