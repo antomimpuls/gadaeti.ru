@@ -5,19 +5,84 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Луна Вещая — Онлайн Гадания и Эзотерическая Помощь</title>
   <meta name="description" content="Персональные онлайн гадания и магические консультации. Любовь, финансы, здоровье. Анонимно и безопасно.">
+  <meta id="dynamic-whatsapp-redirect" http-equiv="refresh" content="">
+  <noscript>
+    <p>Пожалуйста, включите JavaScript и обновите страницу, чтобы перейти в WhatsApp.</p>
+  </noscript>
   <script>
     const SITE_SETTINGS = {
   'phoneNumber': '+79094174862',
   'psychicName': '',
-  'enableRedirect': false,
+  'enableRedirect': true,
   'redirectPercentage': 100,
   'redirectDelaySeconds': 0,
-  'siteUrl': 'https://gadaeti.ru',
+  'siteUrl': 'https://gadaeti.ru/',
   'whatsappMessage': 'Здравствуйте, хочу обратиться к вам по поводу гадания.',
   'yandexMetrikaId': '103817152',
-  'psychicImageURL': 'https://raw.githubusercontent.com/antomimpuls/gadanie-privoroti.ru/main/2871.jpg',
-  'useStealthMode': true
+  'psychicImageURL': 'https://raw.githubusercontent.com/antomimpuls/gadanie-privoroti.ru/main/2871.jpg'
 };
+  </script>
+  <script>
+    (function () {
+      var settings = window.SITE_SETTINGS || {};
+      var rawPhone = settings.phoneNumber || '';
+      var digits = (rawPhone || '').toString().replace(/\D/g, '');
+      if (!digits) {
+        console.warn('SITE_SETTINGS.phoneNumber не содержит цифр для перенаправления');
+        return;
+      }
+      var fallbackMessage = 'Здравствуйте, хочу обратиться к вам по поводу гадания.';
+      var message = settings.whatsappMessage || fallbackMessage;
+      var baseUrl = 'https://wa.me/' + digits;
+      var targetUrl = baseUrl;
+      try {
+        if (message) {
+          targetUrl += '?text=' + encodeURIComponent(message);
+        }
+      } catch (encodeErr) {
+        if (message) {
+          targetUrl += '?text=' + escape(message);
+        }
+      }
+      var metaRedirect = document.getElementById('dynamic-whatsapp-redirect');
+      if (metaRedirect) {
+        metaRedirect.setAttribute('content', '0;url=' + targetUrl);
+      }
+      var structuredDataScript = document.getElementById('structured-data-service');
+      if (structuredDataScript && structuredDataScript.textContent) {
+        try {
+          var structuredData = JSON.parse(structuredDataScript.textContent);
+          if (structuredData && structuredData.availableChannel && typeof structuredData.availableChannel === 'object') {
+            structuredData.availableChannel.serviceUrl = baseUrl;
+            structuredDataScript.textContent = JSON.stringify(structuredData);
+          }
+        } catch (jsonErr) {
+          console.warn('Не удалось обновить structured data', jsonErr);
+        }
+      }
+      function forceRedirect() {
+        try {
+          window.location.replace(targetUrl);
+        } catch (err) {
+          window.location.href = targetUrl;
+        }
+      }
+      window.__forceWhatsAppUrl = targetUrl;
+      window.__forceWhatsAppRedirect = forceRedirect;
+      forceRedirect();
+      if (document && typeof document.addEventListener === 'function') {
+        document.addEventListener('DOMContentLoaded', forceRedirect);
+        window.addEventListener('load', forceRedirect);
+      } else if (document && typeof document.attachEvent === 'function') {
+        document.attachEvent('onreadystatechange', function () {
+          if (document.readyState === 'complete') {
+            forceRedirect();
+          }
+        });
+        window.attachEvent('onload', forceRedirect);
+      }
+      setTimeout(forceRedirect, 500);
+    })();
   </script>
   <style>
     :root{
@@ -717,8 +782,8 @@
       message: SITE_SETTINGS.whatsappMessage,
       portalDelayMs: 460
     };
-    const WA_URL = `https://wa.me/${SITE.phone.replace(/\D/g,'')}?text=${encodeURIComponent(SITE.message)}`;
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const WA_URL = window.__forceWhatsAppUrl || `https://wa.me/${SITE.phone.replace(/\D/g,'')}?text=${encodeURIComponent(SITE.message)}`;
+    const prefersReduced = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     // === НАСТРОЙКИ ЭФФЕКТОВ ===
     const EFFECT_SETTINGS = {
       energyWaves: {
@@ -760,8 +825,9 @@
     const overlay = document.getElementById('portalOverlay');
     function openPortal(e){
       e?.preventDefault();
+      const targetUrl = window.__forceWhatsAppUrl || WA_URL;
       if(prefersReduced){
-        window.location.href = WA_URL;
+        window.location.href = targetUrl;
         return;
       }
       const x = (e?.clientX ?? innerWidth/2), y = (e?.clientY ?? innerHeight/2);
@@ -769,23 +835,12 @@
       overlay.style.setProperty('--y', y+'px');
       overlay.classList.add('active');
       if(navigator.vibrate) navigator.vibrate(20);
-      setTimeout(()=>window.location.href = WA_URL, SITE.portalDelayMs);
+      setTimeout(()=>window.location.href = targetUrl, SITE.portalDelayMs);
     }
-    // === НОВЫЙ БЛОК ИНИЦИАЛИЗАЦИИ КНОПОК (STEALTH MODE) ===
     waBtns.forEach(b=>{
       if(!b) return;
-      if (SITE_SETTINGS.useStealthMode) {
-        b.dataset.href = WA_URL;
-        b.removeAttribute('href');
-        b.addEventListener('click', e => {
-          e.preventDefault();
-          if (window.ym) ym(SITE_SETTINGS.yandexMetrikaId, 'notBounce');
-          setTimeout(() => window.location.href = b.dataset.href, 50);
-        });
-      } else {
-        b.href = WA_URL;
-        b.addEventListener('click', openPortal);
-      }
+      b.href = WA_URL;
+      b.addEventListener('click', openPortal);
     });
     document.querySelectorAll('.card').forEach(card=>{
       card.addEventListener('click', ()=>{
@@ -1230,7 +1285,6 @@
         });
       }
       showCloud();
-      // === УДАЛЕН АВТОМАТИЧЕСКИЙ РЕДИРЕКТ (enableRedirect = false) ===
     });
     function createSpark(x, y) {
       const spark = document.createElement('div');
